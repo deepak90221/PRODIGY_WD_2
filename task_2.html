@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stopwatch</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+  }
+
+  .stopwatch {
+    font-size: 36px;
+  }
+
+  .controls {
+    margin-top: 20px;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    margin-right: 10px;
+    transition: background-color 0.3s;
+  }
+
+  .btn:hover {
+    background-color: #45a049;
+  }
+
+  .lap {
+    font-size: 20px;
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+<div class="stopwatch">00:00:00</div>
+<div class="controls">
+  <button class="btn" onclick="start()">Start</button>
+  <button class="btn" onclick="pause()">Pause</button>
+  <button class="btn" onclick="reset()">Reset</button>
+  <button class="btn" onclick="lap()">Lap</button>
+</div>
+<div class="lap-list"></div>
+
+<script>
+  let timer;
+  let startTime;
+  let elapsedTime = 0;
+  let laps = [];
+
+  function start() {
+    if (!timer) {
+      startTime = Date.now() - elapsedTime;
+      timer = setInterval(update, 10);
+    }
+  }
+
+  function pause() {
+    clearInterval(timer);
+    timer = null;
+  }
+
+  function reset() {
+    clearInterval(timer);
+    timer = null;
+    elapsedTime = 0;
+    updateDisplay();
+    laps = [];
+    updateLaps();
+  }
+
+  function lap() {
+    laps.push(elapsedTime);
+    updateLaps();
+  }
+
+  function update() {
+    elapsedTime = Date.now() - startTime;
+    updateDisplay();
+  }
+
+  function updateDisplay() {
+    const milliseconds = String(elapsedTime % 1000).padStart(3, '0');
+    const seconds = String(Math.floor((elapsedTime / 1000) % 60)).padStart(2, '0');
+    const minutes = String(Math.floor((elapsedTime / (1000 * 60)) % 60)).padStart(2, '0');
+    const hours = String(Math.floor((elapsedTime / (1000 * 60 * 60)) % 24)).padStart(2, '0');
+    document.querySelector('.stopwatch').textContent = `${hours}:${minutes}:${seconds}.${milliseconds}`;
+  }
+
+  function updateLaps() {
+    const lapList = document.querySelector('.lap-list');
+    lapList.innerHTML = '';
+    laps.forEach((lapTime, index) => {
+      const milliseconds = String(lapTime % 1000).padStart(3, '0');
+      const seconds = String(Math.floor((lapTime / 1000) % 60)).padStart(2, '0');
+      const minutes = String(Math.floor((lapTime / (1000 * 60)) % 60)).padStart(2, '0');
+      const hours = String(Math.floor((lapTime / (1000 * 60 * 60)) % 24)).padStart(2, '0');
+      const lapItem = document.createElement('div');
+      lapItem.textContent = `Lap ${index + 1}: ${hours}:${minutes}:${seconds}.${milliseconds}`;
+      lapList.appendChild(lapItem);
+    });
+  }
+</script>
+</body>
+</html>
